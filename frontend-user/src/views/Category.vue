@@ -33,7 +33,7 @@
               >
                 <div class="subcategory-image">
                   <el-image 
-                    :src="`https://picsum.photos/120/120?random=${sub.id}`" 
+                    :src="sub.image" 
                     fit="cover"
                   >
                     <template #error>
