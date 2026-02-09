@@ -148,8 +148,17 @@ function handleMenuSelect(index) {
   }, 500)
 }
 
-function saveProfile() {
-  ElMessage.success('保存成功')
+async function saveProfile() {
+  const result = await userStore.updateUserInfo({
+    nickname: profileForm.nickname,
+    email: profileForm.email
+  })
+  
+  if (result.success) {
+    ElMessage.success('保存成功')
+  } else {
+    ElMessage.error(result.message || '保存失败')
+  }
 }
 
 onMounted(() => {

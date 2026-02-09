@@ -71,7 +71,8 @@ export const api = {
   // 用户
   login: withErrorHandler((data) => mockApi.login(data)),
   register: withErrorHandler((data) => mockApi.register(data)),
-  getUserInfo: withErrorHandler(() => mockApi.getUserInfo())
+  getUserInfo: withErrorHandler(() => mockApi.getUserInfo()),
+  updateUserInfo: withErrorHandler((data) => mockApi.updateUserInfo(data))
 }
 
 export default api

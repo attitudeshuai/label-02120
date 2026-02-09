@@ -418,7 +418,15 @@ const mockApi = {
 
   async getUserInfo() {
     await delay(200)
-    return { code: 200, data: mockUser }
+    return { code: 200, data: { ...mockUser } }
+  },
+
+  async updateUserInfo(data) {
+    await delay(300)
+    // 更新模拟用户数据
+    if (data.nickname) mockUser.nickname = data.nickname
+    if (data.email) mockUser.email = data.email
+    return { code: 200, data: { ...mockUser } }
   }
 }
 

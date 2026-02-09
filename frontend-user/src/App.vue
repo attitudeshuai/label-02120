@@ -13,8 +13,19 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
+
+// 应用启动时恢复登录状态
+onMounted(async () => {
+  if (userStore.token && !userStore.userInfo) {
+    await userStore.fetchUserInfo()
+  }
+})
 </script>
 
 <style lang="scss" scoped>
