@@ -319,8 +319,8 @@ const mockApi = {
       list = list.filter(p => p.name.toLowerCase().includes(kw))
     }
     // 排序
-    if (params.sort === 'price_asc') list.sort((a, b) => a.price - b.price)
-    else if (params.sort === 'price_desc') list.sort((a, b) => b.price - a.price)
+    if (params.sort === 'price-asc') list.sort((a, b) => a.price - b.price)
+    else if (params.sort === 'price-desc') list.sort((a, b) => b.price - a.price)
     else if (params.sort === 'sales') list.sort((a, b) => b.sales - a.sales)
     // 分页
     const page = params.page || 1

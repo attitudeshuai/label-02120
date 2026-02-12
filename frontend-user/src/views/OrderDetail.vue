@@ -30,7 +30,7 @@
           <div class="address-content">
             <p><span class="label">收货人：</span>{{ order.address.name }}</p>
             <p><span class="label">联系电话：</span>{{ order.address.phone }}</p>
-            <p><span class="label">收货地址：</span>{{ order.address.address }}</p>
+            <p><span class="label">收货地址：</span>{{ order.address.province }}{{ order.address.city }}{{ order.address.district }}{{ order.address.detail }}</p>
           </div>
         </div>
 
