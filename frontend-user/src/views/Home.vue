@@ -82,6 +82,28 @@
           />
         </div>
       </section>
+
+      <!-- 猜你喜欢 -->
+      <section class="product-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <el-icon><MagicStick /></el-icon>
+            猜你喜欢
+          </h2>
+          <button class="refresh-btn" @click="refreshRecommend" :disabled="refreshing">
+            <el-icon :class="{ rotating: refreshing }"><Refresh /></el-icon>
+            换一批
+          </button>
+        </div>
+        
+        <div class="product-grid" v-loading="refreshing">
+          <ProductCard 
+            v-for="product in recommendedProducts" 
+            :key="product.id" 
+            :product="product" 
+          />
+        </div>
+      </section>
     </div>
   </div>
 </template>
@@ -92,10 +114,30 @@ import api from '@/api'
 import ProductCard from '@/components/common/ProductCard.vue'
 
 const loading = ref(false)
+const refreshing = ref(false)
 const banners = ref([])
 const categories = ref([])
 const hotProducts = ref([])
 const newProducts = ref([])
+const recommendedProducts = ref([])
+const allProducts = ref([])
+
+function getRecommendations(count = 4) {
+  const scored = allProducts.value.map(product => ({
+    ...product,
+    _score: product.sales * 0.6 + product.rating * 1000 * 0.4 + Math.random() * 500
+  }))
+  scored.sort((a, b) => b._score - a._score)
+  return scored.slice(0, count).map(({ _score, ...p }) => p)
+}
+
+function refreshRecommend() {
+  refreshing.value = true
+  setTimeout(() => {
+    recommendedProducts.value = getRecommendations(4)
+    refreshing.value = false
+  }, 600)
+}
 
 onMounted(async () => {
   loading.value = true
@@ -110,12 +152,16 @@ onMounted(async () => {
     categories.value = categoriesRes.data
     hotProducts.value = productsRes.data.list
     
+    const allRes = await api.getProducts({ pageSize: 100 })
+    allProducts.value = allRes.data.list
+    
     // 获取新品
-    const newRes = await api.getProducts({ pageSize: 4 })
-    newProducts.value = newRes.data.list.filter(p => p.tags?.includes('新品'))
+    newProducts.value = allProducts.value.filter(p => p.tags?.includes('新品')).slice(0, 4)
     if (newProducts.value.length < 4) {
-      newProducts.value = newRes.data.list.slice(0, 4)
+      newProducts.value = allProducts.value.slice(0, 4)
     }
+    
+    recommendedProducts.value = getRecommendations(4)
   } finally {
     loading.value = false
   }
@@ -249,5 +295,43 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: $spacing-base;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-base;
+  font-size: $font-sm;
+  color: $text-secondary;
+  background: transparent;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    color: $primary-color;
+    border-color: $primary-color;
+    background: rgba($primary-color, 0.05);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .rotating {
+    animation: spin 0.6s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
