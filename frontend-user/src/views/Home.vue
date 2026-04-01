@@ -82,6 +82,27 @@
           />
         </div>
       </section>
+
+      <!-- 猜你喜欢 -->
+      <section class="product-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <el-icon><MagicStick /></el-icon>
+            猜你喜欢
+          </h2>
+          <button class="view-more" @click="refreshRecommendations">
+            换一批 <el-icon><Refresh /></el-icon>
+          </button>
+        </div>
+        
+        <div class="product-grid">
+          <ProductCard 
+            v-for="product in recommendedProducts" 
+            :key="product.id" 
+            :product="product" 
+          />
+        </div>
+      </section>
     </div>
   </div>
 </template>
@@ -96,6 +117,7 @@ const banners = ref([])
 const categories = ref([])
 const hotProducts = ref([])
 const newProducts = ref([])
+const recommendedProducts = ref([])
 
 onMounted(async () => {
   loading.value = true
@@ -116,10 +138,28 @@ onMounted(async () => {
     if (newProducts.value.length < 4) {
       newProducts.value = newRes.data.list.slice(0, 4)
     }
+    
+    // 获取猜你喜欢推荐商品（随机抽取，模拟个性化推荐）
+    const allRes = await api.getProducts({ pageSize: 12 })
+    recommendedProducts.value = [...allRes.data.list]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 4)
   } finally {
     loading.value = false
   }
 })
+
+async function refreshRecommendations() {
+  loading.value = true
+  try {
+    const allRes = await api.getProducts({ pageSize: 12 })
+    recommendedProducts.value = [...allRes.data.list]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 4)
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <style lang="scss" scoped>
