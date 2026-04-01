@@ -62,6 +62,27 @@
         </div>
       </section>
 
+      <!-- 猜你喜欢 -->
+      <section class="product-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <el-icon><MagicStick /></el-icon>
+            猜你喜欢
+          </h2>
+          <router-link to="/products" class="view-more">
+            查看更多 <el-icon><ArrowRight /></el-icon>
+          </router-link>
+        </div>
+        
+        <div class="product-grid">
+          <ProductCard 
+            v-for="product in recommendedProducts" 
+            :key="product.id" 
+            :product="product" 
+          />
+        </div>
+      </section>
+
       <!-- 新品推荐 -->
       <section class="product-section">
         <div class="section-header">
@@ -96,6 +117,7 @@ const banners = ref([])
 const categories = ref([])
 const hotProducts = ref([])
 const newProducts = ref([])
+const recommendedProducts = ref([])
 
 onMounted(async () => {
   loading.value = true
@@ -109,6 +131,11 @@ onMounted(async () => {
     banners.value = bannersRes.data
     categories.value = categoriesRes.data
     hotProducts.value = productsRes.data.list
+    
+    // 获取猜你喜欢（随机推荐）
+    const allRes = await api.getProducts({ pageSize: 12 })
+    const shuffled = [...allRes.data.list].sort(() => Math.random() - 0.5)
+    recommendedProducts.value = shuffled.slice(0, 4)
     
     // 获取新品
     const newRes = await api.getProducts({ pageSize: 4 })
